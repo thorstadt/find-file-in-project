@@ -85,11 +85,17 @@
   '("*.rb" "*.html" "*.el" "*.js" "*.rhtml")
   "List of patterns to look for with find-file-in-project.")
 
-(defvar ffip-find-options
+(defun ffip-read-exclusions ()
   ""
-  "Extra options to pass to `find' when using find-file-in-project.
-
-Use this to exclude portions of your project: \"-not -regex \\\".*vendor.*\\\"\"")
+  "Read excluded paths from .gitignore"
+  (let '(gitignore-file (concat (or ffip-project-root (ffip-project-root)) "/" ".gitignore"))
+    (when (file-readable-p gitignore-file)
+      (with-temp-buffer
+        (insert-file-contents gitignore-file)
+        (concat "-and "
+               (apply 'concat
+                       (mapcar (lambda (x) (format "-not -regex '.*%s.*' " x))
+                                     (split-string (buffer-string) "\n" t))))))))
 
 (defvar ffip-project-root nil
   "If non-nil, overrides the project root directory location.")
@@ -112,12 +118,12 @@ directory they are found in so that they are unique."
                 (add-to-list 'file-alist file-cons)
                 file-cons))
             (split-string (shell-command-to-string
-                           (format "find %s -type f %s %s"
+                           (format "find %s -type f \\\( %s \\\) %s"
                                    (or ffip-project-root
                                        (ffip-project-root)
                                        (error "no project root found"))
                                    (ffip-join-patterns)
-                                   ffip-find-options))))))
+                                   (ffip-read-exclusions)))))))
 
 ;; TODO: Emacs has some built-in uniqueify functions; investigate using those.
 (defun ffip-uniqueify (file-cons)
