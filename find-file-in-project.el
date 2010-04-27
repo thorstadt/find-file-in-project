@@ -1,10 +1,10 @@
 ;;; find-file-in-project.el --- Find files in a project quickly.
 
-;; Copyright (C) 2006, 2007, 2008, 2009 Phil Hagelberg, Doug Alcorn, and Will Farrington
+;; Copyright (C) 2006, 2007, 2008, 2009, 2010 Phil Hagelberg, Doug Alcorn, Will Farrington and Ryan Crum
 
-;; Author: Phil Hagelberg, Doug Alcorn, and Will Farrington
+;; Author: Phil Hagelberg, Doug Alcorn, Will Farrington and Ryan Crum
 ;; URL: http://www.emacswiki.org/cgi-bin/wiki/FindFileInProject
-;; Git: git://github.com/wfarr/find-file-in-project.git
+;; Git: git://github.com/thorstadt/find-file-in-project.git
 ;; Version: 2.1
 ;; Created: 2008-03-18
 ;; Keywords: project, convenience
@@ -33,45 +33,17 @@
 
 ;; This library depends on GNU find.
 
-;; This file provides a couple methods for quickly finding any file in
-;; a given project. Projects are defined in two ways. The first uses 
-;; `locate-dominating-file'. First, if the `locate-dominating-file'
-;; function is bound, it assumes you are using Emacs 23, in which case
-;; you it will look for a `.dir-locals.el' file in an ancestor
-;; directory of the current file. Otherwise it uses the
-;;`project-local-variables' library, which looks for a `.emacs-project'
-;; file.
-
-;; The other method takes advantage of the prominence of version
-;; control systems in projects to quickly identify the tree for a
-;; project. It does so using `project.el' when available. `project.el'
-;; is shipped in this tree, but for reasons of encouraging using
-;; default Emacs behavior when and where possible, you will need to
-;; manually require it in your Emacs configuration to make use of it.
-
-;; By default, it looks only for files whose names match
-;; `ffip-regexp', but it's understood that that variable will be
-;; overridden locally. This can be done either with a mode hook:
-
-;; (add-hook 'emacs-lisp-mode-hook
-;;           (lambda (set (make-local-variable 'ffip-regexp) ".*\\.el")))
-
-;; or by setting it in your .emacs-project/.dir-settings.el file, in
-;; which case it will get set locally.
-
-;; You can also be a bit more specific about what files you want to
-;; find. For instance, in a Ruby on Rails project, you may be
-;; interested in all .rb files that don't exist in the "vendor"
-;; directory. In that case you could locally set `ffip-find-options'
-;; to "" from within a hook or your .emacs-project file. The options
-;; accepted in that variable are passed directly to the Unix `find'
-;; command, so any valid arguments for that program are acceptable.
+;; This assumes you are using GIT as your source control, and therefore assumes
+;; that the project root is where .git lives.
+;; It uses the .gitignore file to decide what should be excluded from the search.
 
 ;; If `ido-mode' is enabled, the menu will use `ido-completing-read'
 ;; instead of `completing-read'.
 
 ;; Recommended binding:
 ;; (global-set-key (kbd "C-x C-M-f") 'find-file-in-project)
+;; (global-set-key (kbd "C-x C-M-r") 'ffip-reset-all-caches)
+
 
 ;;; TODO:
 
