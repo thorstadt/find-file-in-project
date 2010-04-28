@@ -98,7 +98,7 @@
 
 (defun filter (pred lst)
   (delq nil
-        (mapcar (lambda (el) (and a(funcall pred el) el)) lst)))
+        (mapcar (lambda (el) (and (funcall pred el) el)) lst)))
 
 (defun ffip-get-root ()
   (or ffip-project-root (ffip-project-root)))
@@ -159,7 +159,7 @@ directory they are found in so that they are unique."
   (message "Recaching all projects...")
   (let ((projects (mapcar 'car ffip-project-cache)))
     (setq ffip-project-cache '())
-    (mapcar 'ffip-cache-project projects))
+    (mapc 'ffip-cache-project projects))
   (message "All projects cached."))
 
 (defun ffip-cached-project-files ()
@@ -200,6 +200,14 @@ directory they are found in so that they are unique."
     (while (search-forward this nil t)
       (replace-match withthat nil t))
     (buffer-substring (point-min) (point-max))))
+
+(defun remove-ffip-cache ()
+  (interactive)
+  (ffip-reset-cache (if (and (boundp 'ido-mode) ido-mode)
+                        (ido-completing-read "Project name:"
+                                             (mapcar 'car ffip-project-cache))
+                      (completing-read "Project name:"
+                                       (mapcar 'car ffip-project-cache)))))
 
 (defun find-file-in-project ()
   "Prompt with a completing list of all files in the project to find one.
